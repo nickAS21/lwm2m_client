@@ -9,12 +9,29 @@ import java.security.spec.*;
 import java.util.Arrays;
 
 @Slf4j
-public class ECCKeyGeneration {
+public class Generation_PSkKey_RPK_ECCKey {
     public static void main(String[] args) throws Exception {
-        KeyPairGenerator kpg;
-        kpg = KeyPairGenerator.getInstance("EC", "SunEC");
-        ECGenParameterSpec ecsp;
-        ecsp = new ECGenParameterSpec("secp256r1");
+        /** PSK */
+        int lenPSkKey = 32;
+        /** RPK */
+        String algorithm = "EC";
+        String provider = "SunEC";
+        String nameParameterSpec = "secp256r1";
+
+        /** Start PSK
+         * Clients and Servers MUST support PSK keys of up to 64 bytes in length, as required by [RFC7925]
+         * SecureRandom object must be unpredictable, and all SecureRandom output sequences must be cryptographically strong, as described in [RFC4086]
+         * */
+        SecureRandom randomPSK = new SecureRandom();
+        byte bytesPSK[] = new byte[lenPSkKey];
+        randomPSK.nextBytes(bytesPSK);
+        log.info("PSK key:  [{}]", Hex.encodeHexString(bytesPSK));
+
+        /** Start RPK
+         * Elliptic Curve parameters  : [secp256r1 [NIST P-256, X9.62 prime256v1] (1.2.840.10045.3.1.7)]
+         * */
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance(algorithm, provider);
+        ECGenParameterSpec ecsp = new ECGenParameterSpec(nameParameterSpec);
         kpg.initialize(ecsp);
 
         KeyPair kp = kpg.genKeyPair();

@@ -1,7 +1,7 @@
-app:
-    version: "2.5.1-SNAPSHOT"
-    name: "Thingsboard LwM2M Client"
-
+info:
+  app:
+    name: @project.name@
+    version: @project.version@
 lwm2m:
   server:
     bind_address: "${SERVER_ADDRESS:localhost}"
@@ -65,11 +65,12 @@ lwm2m:
       dtls_mode: "${DTLIS_MODE:0}"
       psk_identity: "${PSK_IDENTITY:client_lwm2m_psk_identity}"
       # Resource MUST be used to store the PSK, defined in [RFC4279]. Since the default PSK ciphersuite
-        #defined in this specification use a 128-bit AES key it is RECOMMENDED to provision a 16 byte (128 bit) key or longer
-        #in the Secret Key Resource. Clients and Servers MUST support PSK keys of up to 64 bytes in length, as required by
+      #defined in this specification use a 128-bit AES key it is RECOMMENDED to provision a 16 byte (128 bit) key or longer
+      #in the Secret Key Resource. Clients and Servers MUST support PSK keys of up to 64 bytes in length, as required by
       #[RFC7925]. Recommendations for generating random keys are provided in RFC 4086 [RFC4086] and in NIST Special
       #Publication 800-90A Revision 1 [SP800-90A].
-      psk_key: "${PSK_KEY:67f6aad1db5e9bdb9778a35e7f4f24f221c8646ce23cb8cf852fedee029cda9c}"
+#      psk_key: "${PSK_KEY:67f6aad1db5e9bdb9778a35e7f4f24f221c8646ce23cb8cf852fedee029cda9c}"
+      psk_key: "${PSK_KEY:011b69a96ba580f57b3ca8718da03b906ea39b3add998c4ce0e25464be12494d}"
       # Raw public key encoded using the SubjectPublicKeyInfo structure, as described in [RFC7250]
       rpk_public_x: "${RPK_CLIENT_PUBLIC_X:33dd9c657e9d17ece73c40c1718ebcc6047bd312530faee8446c604093fe6f00}"
       rpk_public_y: "${RPK_CLIENT_PUBLIC_Y:f15c1c62d516c792d1334edc9a93140a70e999ff5cbf928b1ecf2fdff0b81c19}"

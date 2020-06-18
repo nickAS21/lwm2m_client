@@ -13,6 +13,6 @@
 
 Spring Boot Formatted Version : ${spring-boot.formatted-version}
  ===================================================
-:: ${app.name} :: ${app.version}
+:: ${info.app.name} :: ${info.app.version}
  ===================================================
 

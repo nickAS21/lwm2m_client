@@ -76,8 +76,8 @@ public class LwM2MSecurityStore{
             initializer.setInstancesForObject(SERVER, new Server(context.getServerShortId(), context.getLifetime(), BindingMode.U, false));
         }
         /** Display client Identity and Security key  to easily add it in servers. */
-        log.info("Client uses PSK : \n EndPoint : [{}] \n Identity : [{}] \n security key : [{}] ", endpoint, pskIdentity, Hex.encodeHexString(pskKey));
-    }
+        getParamsPSKKey(pskIdentity, pskKey);
+     }
 
     private void setInstancesRPK() {
         String serverSecureURI = null;
@@ -94,7 +94,7 @@ public class LwM2MSecurityStore{
             initializer.setInstancesForObject(SERVER, new Server(context.getServerShortId(), context.getLifetime(), BindingMode.U, false));
         }
         /** Display client public key to easily add it in servers. */
-        getParamsRawPublicKey(getClientPublicKey(), getClientPrivateKey(), endpoint);
+        getParamsRawPublicKey(getClientPublicKey(), getClientPrivateKey());
     }
 
     private void setInstancesX509() {
@@ -212,7 +212,15 @@ public class LwM2MSecurityStore{
         }
     }
 
-    private void getParamsRawPublicKey(PublicKey rawPublicKey, PrivateKey clientPrivateKey, String endpoint) {
+
+    private void getParamsPSKKey(byte[] pskIdentity, byte[] pskKey) {
+        log.info("Client uses PSK : \n EndPoint : [{}] \n Identity : [{}] \n security key : [{}]",
+                endpoint,
+                new String(pskIdentity),
+                Hex.encodeHexString(pskKey));
+
+    }
+    private void getParamsRawPublicKey(PublicKey rawPublicKey, PrivateKey clientPrivateKey) {
         if (rawPublicKey instanceof ECPublicKey) {
             ECPublicKey ecPublicKey = (ECPublicKey) rawPublicKey;
             /** Get x coordinate */
