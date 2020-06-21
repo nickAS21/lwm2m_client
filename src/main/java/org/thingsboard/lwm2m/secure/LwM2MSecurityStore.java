@@ -9,6 +9,8 @@ import org.eclipse.leshan.core.util.Hex;
 import org.thingsboard.lwm2m.client.LwM2MClientContext;
 import org.thingsboard.lwm2m.client.LwM2MSecurityMode;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.*;
@@ -49,15 +51,23 @@ public class LwM2MSecurityStore{
         switch (LwM2MSecurityMode.fromSecurityMode(context.getDtlsMode())) {
             case PSK:
                 setInstancesPSK();
+                if (context.getCreatePskRpk_key()) {
+                    new generationPSkKeyRPKECCKey(context.getDtlsMode());
+                }
                 break;
             case RPK:
                 setInstancesRPK();
+                if (context.getCreatePskRpk_key()) {
+                    new generationPSkKeyRPKECCKey(context.getDtlsMode());
+                }
                 break;
             case X509:
                 setInstancesX509();
                 break;
             case NO_SEC:
                 setInstancesNoSec();
+                break;
+            default:
         }
     }
 
@@ -76,7 +86,7 @@ public class LwM2MSecurityStore{
             initializer.setInstancesForObject(SERVER, new Server(context.getServerShortId(), context.getLifetime(), BindingMode.U, false));
         }
         /** Display client Identity and Security key  to easily add it in servers. */
-        getParamsPSKKey(pskIdentity, pskKey);
+        getParamsPSKKey(pskIdentity, pskKey, serverSecureURI);
      }
 
     private void setInstancesRPK() {
@@ -195,29 +205,35 @@ public class LwM2MSecurityStore{
 
     private void readKeyStores() {
         /** Get certificates from key store */
-        try (InputStream inClient = ClassLoader.getSystemResourceAsStream(context.getClientKeyStorePath())) {
-            try (InputStream inServer = ClassLoader.getSystemResourceAsStream(context.getServerKeyStorePath())) {
 
-                char[] serverKeyStorePwd = context.getServerKeyStorePwd().toCharArray();
-                this.keyStoreServer = KeyStore.getInstance(KeyStore.getDefaultType());
-                keyStoreServer.load(inServer, serverKeyStorePwd);
-                char[] clientKeyStorePwd = context.getClientKeyStorePwd().toCharArray();
-                this.keyStoreClient = KeyStore.getInstance(KeyStore.getDefaultType());
-                keyStoreClient.load(inClient, clientKeyStorePwd);
+        try (InputStream inClient = context.getClientKeyStorePathFile().isEmpty() ?
+                ClassLoader.getSystemResourceAsStream(context.getClientKeyStorePathResource()) : new FileInputStream(new File(context.getClientKeyStorePathFile()))) {
+            try (InputStream inServer = context.getServerKeyStorePathFile().isEmpty() ?
+                    ClassLoader.getSystemResourceAsStream(context.getServerKeyStorePathResource()) : new FileInputStream(new File(context.getServerKeyStorePathFile()))) {
+                this.keyStoreServer = KeyStore.getInstance(context.getServerKeyStoreType());
+                this.keyStoreServer.load(inServer, context.getServerKeyStorePwd() == null ? null : context.getServerKeyStorePwd().toCharArray());
+                serverCertificate = (X509Certificate) keyStoreServer.getCertificate(context.getServerAlias());
+                this.keyStoreClient = KeyStore.getInstance(context.getClientKeyStoreType());
+                this.keyStoreClient.load(inClient, context.getClientKeyStorePwd() == null ? null : context.getClientKeyStorePwd().toCharArray());
             } catch (Exception ex) {
-                log.error("Unable to load X509 keyStoreServer: [{}]", ex.getMessage());
+                log.error("[{}] [{}] Unable to load X509 keyStoreServer: [{}]",
+                        context.getServerKeyStorePathFile().isEmpty() ? context.getServerKeyStorePathResource() : context.getServerKeyStorePathFile(),
+                        context.getServerKeyStorePwd(), ex.getMessage());
             }
         } catch (Exception e) {
-            log.error("Unable to load X509 keyStoreClient: [{}]", e.getMessage());
+            log.error("[{}] [{}] Unable to load X509 keyStoreClient: [{}]",
+                    context.getClientKeyStorePathFile().isEmpty() ? context.getClientKeyStorePathResource() : context.getClientKeyStorePathFile(),
+                    context.getClientKeyStorePwd(), e.getMessage());
         }
     }
 
 
-    private void getParamsPSKKey(byte[] pskIdentity, byte[] pskKey) {
-        log.info("Client uses PSK : \n EndPoint : [{}] \n Identity : [{}] \n security key : [{}]",
+    private void getParamsPSKKey(byte[] pskIdentity, byte[] pskKey, String serverSecureURI) {
+        log.info("\nClient uses PSK : \n EndPoint : [{}] \n Identity : [{}] \n security key : [{}] \n serverSecureURI : [{}]",
                 endpoint,
                 new String(pskIdentity),
-                Hex.encodeHexString(pskKey));
+                Hex.encodeHexString(pskKey),
+                serverSecureURI);
 
     }
     private void getParamsRawPublicKey(PublicKey rawPublicKey, PrivateKey clientPrivateKey) {
@@ -236,7 +252,7 @@ public class LwM2MSecurityStore{
             /** Get Curves params */
             String params = ecPublicKey.getParams().toString();
             log.info(
-                    " \nClient uses RPK : \nEndpoint : [{}]\n Elliptic Curve parameters  : [{}] \n Public x coord : [{}] \n Public y coord : [{}] \n Public Key (Hex): [{}] \n Private Key (Hex): [{}]",
+                    " \nClient uses RPK : \n Endpoint : [{}]\n Elliptic Curve parameters  : [{}] \n Public x coord : [{}] \n Public y coord : [{}] \n Public Key (Hex): [{}] \n Private Key (Hex): [{}]",
                     endpoint, params, Hex.encodeHexString(x), Hex.encodeHexString(y),
                     Hex.encodeHexString(rawPublicKey.getEncoded()).toUpperCase(),
                     Hex.encodeHexString(clientPrivateKey.getEncoded()));

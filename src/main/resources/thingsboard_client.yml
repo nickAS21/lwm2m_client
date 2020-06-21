@@ -1,12 +1,8 @@
-info:
-  app:
-    name: @project.name@
-    version: @project.version@
 lwm2m:
   server:
     bind_address: "${SERVER_ADDRESS:localhost}"
     bind_port: "${SERVER_PORT:5685}"
-    short_id: "${SERVER_PORT:123}"
+    short_id: "${SERVER_SHORT_ID:123}"
     secure:
       bind_address: "${SECURE_SERVER_ADDRESS:localhost}"
       bind_port: "${SECURE_SERVER_PORT:5686}"
@@ -14,13 +10,17 @@ lwm2m:
       rpk_public_x: "${RPK_SERVER_PUBLIC_X:405354ea8893471d9296afbc8b020a5c6201b0bb25812a53b849d4480fa5f069}"
       rpk_public_y: "${RPK_SERVER_PUBLIC_Y:30c9237e946a3a1692c1cafaa01a238a077f632c99371348337512363f28212b}"
       # Get keystore parameters
-      key_store_path: "${SERVER_KEY_STORE_PATH:credentials/serverKeyStore.jks}"
+      key_store_type: "${LWM2M_KEYSTORE_TYPE:JKS}"
+      #      key_store_type: "${LWM2M_KEYSTORE_TYPE:PKCS12}"
+      key_store_path_file: "${SERVER_KEY_STORE_PATH_FILE:}"
+      key_store_path_resource: "credentials/serverKeyStore.jks"
       key_store_pwd: "${SERVER_KEY_STORE_PWD:server_ks_password}"
       alias: "${SERVER_ALIAS:server}"
   bootstrap:
     enable: "${BOOTSTRAP:false}"
     bind_address: "${SERVER_ADDRESS:localhost}"
     bind_port: "${SERVER_PORT:5687}"
+    short_id: "${SERVER_SHORT_ID:456}"
     secure:
       bind_address: "${SECURE_SERVER_ADDRESS:localhost}"
       bind_port: "${SECURE_SERVER_PORT:5688}"
@@ -30,6 +30,7 @@ lwm2m:
       # Get keystore parameters
       alias: "${BOOTSTRAP_ALIAS:bootstrap}"
   client:
+    create_psk_rpk_key: "${CREATE_PSK_RPK_KEY:true}"
     endpoint: "${ENDPOINT:client_lwm2m}"
     sub_endpoint: "${SUB_ENDPOINT:}"
     bind_address: "${CLIENT_ADDRESS:}"
@@ -80,7 +81,10 @@ lwm2m:
       # - TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8, as defined in [RFC7251] and mandated in [RFC7925]
       # - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, as defined in [RFC5289]
       # Get keystore parameters
-      key_store_path: "${CLIENT_KEY_STORE_PATH:credentials/clientKeyStore.jks}"
+      key_store_type: "${LWM2M_KEYSTORE_TYPE:JKS}"
+      #      key_store_type: "${LWM2M_KEYSTORE_TYPE:PKCS12}"
+      key_store_path_file: "${CLIENT_KEY_STORE_PATH_FILE:}"
+      key_store_path_resource: "credentials/clientKeyStore.jks"
       key_store_pwd: "${CLIENT_KEY_STORE_PWD:client_ks_password}"
       alias: "${CLIENT_ALIAS:client}"
 

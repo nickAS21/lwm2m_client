@@ -10,7 +10,7 @@ public enum LwM2MSecurityMode {
     NO_SEC(3, "no_sec"),
     X509_EST(4, "x509_est"),
     REDIS(5, "redis"),
-    DEFAULT(100, "redis");
+    DEFAULT_MODE(100, "default_mode");
 
     public int code;
     public String  subEndpoint;

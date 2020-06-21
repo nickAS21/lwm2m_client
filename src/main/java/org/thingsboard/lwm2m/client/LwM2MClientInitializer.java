@@ -17,11 +17,9 @@ public class LwM2MClientInitializer {
     @Autowired
     private LeshanClient client;
 
-    @Autowired
-    private LwM2MClientContext context;
-
     @PostConstruct
     public void init() {
+
         log.info("init client");
         this.client.getObjectTree().addListener(new ObjectsListenerAdapter() {
             @Override

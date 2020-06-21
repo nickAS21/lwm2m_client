@@ -16,11 +16,8 @@ import java.util.Arrays;
 @ComponentScan({"org.thingsboard.lwm2m"})
 public class LwM2mClient {
 
-
     private static final String SPRING_CONFIG_NAME_KEY = "--spring.config.name";
     private static final String DEFAULT_SPRING_CONFIG_PARAM = SPRING_CONFIG_NAME_KEY + "=" + "thingsboard_client";
-
-
 
     public static void main(final String[] args) {
         SpringApplication.run(LwM2mClient.class, updateArguments(args));

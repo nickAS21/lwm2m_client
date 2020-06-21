@@ -55,9 +55,9 @@ public class LwM2MClientConfiguration {
     private LwM2MLocationParams locationParams;
 
     @Bean
-    public LeshanClient getLeshanClient() throws URISyntaxException {
+    public LeshanClient getLeshanClient() {
         /** Create client */
-        log.info("Starting LwM2M client... PostConstruct");
+        log.info("Starting LwM2M client... PostConstruct. BootstrapEnable: [{}]", context.getBootstrapEnable());
         /** Initialize model */
         List<ObjectModel> models = ObjectLoader.loadDefault();
         List<ObjectModel> listModels = ObjectLoader.loadDdfResources(MODEL_DEFAULT_RESOURCE_PATH, modelPaths);

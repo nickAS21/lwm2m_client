@@ -41,8 +41,16 @@ public class LwM2MClientContext {
     private String serverRPkPublic_y;
 
     @Getter
-    @Value("${lwm2m.server.secure.key_store_path:}")
-    private String serverKeyStorePath;
+    @Value("${lwm2m.server.secure.key_store_type:}")
+    private String serverKeyStoreType;
+
+    @Getter
+    @Value("${lwm2m.server.secure.key_store_path_file:}")
+    private String serverKeyStorePathFile;
+
+   @Getter
+    @Value("${lwm2m.server.secure.key_store_path_resource:}")
+    private String serverKeyStorePathResource;
 
     @Getter
     @Value("${lwm2m.server.secure.key_store_pwd:}")
@@ -65,6 +73,10 @@ public class LwM2MClientContext {
     private Integer bootstrapPort;
 
     @Getter
+    @Value("${lwm2m.bootstrap.short_id:456}")
+    private Integer bootstrapShortId;
+
+    @Getter
     @Value("${lwm2m.server.bootstrap.bind_address:localhost}")
     private String bootstrapSecureHost;
 
@@ -83,6 +95,10 @@ public class LwM2MClientContext {
     @Getter
     @Value("${lwm2m.bootstrap.secure.alias:}")
     private String bootstrapAlias;
+
+    @Getter
+    @Value("${lwm2m.client.create_psk_rpk_key:}")
+    private Boolean createPskRpk_key;
 
     @Getter
     @Value("${lwm2m.client.endpoint:}")
@@ -165,8 +181,16 @@ public class LwM2MClientContext {
     private String clientRPkPrivate_s;
 
     @Getter
-    @Value("${lwm2m.client.secure.key_store_path:}")
-    private String clientKeyStorePath;
+    @Value("${lwm2m.client.secure.key_store_type:}")
+    private String clientKeyStoreType;
+
+    @Getter
+    @Value("${lwm2m.client.secure.key_store_path_file:}")
+    private String clientKeyStorePathFile;
+
+    @Getter
+    @Value("${lwm2m.client.secure.key_store_path_resource:}")
+    private String clientKeyStorePathResource;
 
     @Getter
     @Value("${lwm2m.client.secure.key_store_pwd:}")
