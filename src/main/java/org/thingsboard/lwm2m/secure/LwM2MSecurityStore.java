@@ -29,7 +29,7 @@ import static org.thingsboard.lwm2m.client.LwM2MClientHandler.coapLink;
 
 @Slf4j
 @Data
-public class LwM2MSecurityStore{
+public class LwM2MSecurityStore {
 
     private KeyStore keyStoreServer;
     private X509Certificate serverCertificate;
@@ -44,7 +44,7 @@ public class LwM2MSecurityStore{
     private String endpoint;
     private ObjectsInitializer initializer;
 
-    public LwM2MSecurityStore (LwM2MClientContext context, ObjectsInitializer initializer, String endpoint) {
+    public LwM2MSecurityStore(LwM2MClientContext context, ObjectsInitializer initializer, String endpoint) {
         this.context = context;
         this.endpoint = endpoint;
         this.initializer = initializer;
@@ -73,7 +73,7 @@ public class LwM2MSecurityStore{
 
 
     private void setInstancesPSK() {
-        byte[] pskIdentity = !context.getPskIdentity().isEmpty() ? context.getPskIdentity().getBytes() : (endpoint + "_identity").getBytes();
+        byte[] pskIdentity = !context.getPskIdentity().isEmpty() ? context.getPskIdentity().getBytes() : (endpoint + context.getPskIdentitySub()).getBytes();
         byte[] pskKey = !context.getPskKey().isEmpty() ? Hex.decodeHex(context.getPskKey().toCharArray()) : Hex.decodeHex(pskKeyDefault.toCharArray());
         String serverSecureURI = null;
         if (context.getBootstrapEnable()) {
@@ -87,7 +87,7 @@ public class LwM2MSecurityStore{
         }
         /** Display client Identity and Security key  to easily add it in servers. */
         getParamsPSKKey(pskIdentity, pskKey, serverSecureURI);
-     }
+    }
 
     private void setInstancesRPK() {
         String serverSecureURI = null;
@@ -113,20 +113,21 @@ public class LwM2MSecurityStore{
         try {
             if (context.getBootstrapEnable()) {
                 serverSecureURI = coapLinkSec + context.getBootstrapSecureHost() + ":" + context.getBootstrapSecurePort();
+//                String bsHexCert = "3082019B30820140A003020102020900EDB5BF4E072D31D9300A06082A8648CE3D04030230273125302306035504030C1C4C657368616E20426F6F747374726170205365727665722044656D6F3020170D3138313031323132333632375A180F32313138303931383132333632375A30273125302306035504030C1C4C657368616E20426F6F747374726170205365727665722044656D6F3059301306072A8648CE3D020106082A8648CE3D030107034200041C52FFDBD8D88031950B30E5FDEB971F7279246B791A2209CE281D82CDEDF7D6A734CE187612F8A013ECDCFC0564F0EE17248CA08A176D0FE53910975FBB51E7A3533051301D0603551D0E04160414FC9BFE3D7E43270B48C722F07AA1B2D90E9A7850301F0603551D23041830168014FC9BFE3D7E43270B48C722F07AA1B2D90E9A7850300F0603551D130101FF040530030101FF300A06082A8648CE3D0403020349003046022100D9A8CF87D8C78F02B76DCA43F07ED7CBB74D6B045DC98195827CADFD07B794BA022100C581D94A2C4B00EA9AB4811FD9F040580EC9A0378BBDEB4F2B510D0736D18092";
                 initializer.setInstancesForObject(SECURITY, x509Bootstrap(serverSecureURI, getClientCertificate().getEncoded(),
                         getClientPrivateKey().getEncoded(), getBootstrapCertificate().getEncoded()));
+//                        getClientPrivateKey().getEncoded(), Hex.decodeHex(bsHexCert.toCharArray())));
+//                initializer.setClassForObject(SERVER, Server.class);
                 initializer.setClassForObject(SERVER, Server.class);
             } else {
                 serverSecureURI = coapLinkSec + context.getServerSecureHost() + ":" + context.getServerSecurePort();
                 initializer.setInstancesForObject(SECURITY, x509(serverSecureURI, context.getServerShortId(), getClientCertificate().getEncoded(),
                         getClientPrivateKey().getEncoded(), getServerCertificate().getEncoded()));
-                initializer.setInstancesForObject(SERVER, new Server(context.getServerShortId(), context.getLifetime(), BindingMode.U, false));
+                initializer.setInstancesForObject(SERVER, new Server(context.getServerShortId(), context.getLifetime(), BindingMode.U, true));
             }
             /** Display X509 credentials to easily at it in servers. */
             if (getClientCertificate() != null) {
-                log.info("Client uses X509 : \n X509 Certificate (Hex): [{}] \n Private Key (Hex): [{}]",
-                        Hex.encodeHexString(getClientCertificate().getEncoded()),
-                        Hex.encodeHexString(getClientPrivateKey().getEncoded()));
+                getParamsX509();
             }
         } catch (CertificateEncodingException e) {
             log.error("DTLS mode: [{}] Error secure initializer: [{}]", LwM2MSecurityMode.fromSecurityMode(context.getDtlsMode()), e.getMessage());
@@ -140,8 +141,7 @@ public class LwM2MSecurityStore{
             serverURI = coapLink + context.getBootstrapHost() + ":" + context.getBootstrapPort();
             initializer.setInstancesForObject(SECURITY, noSecBootstap(serverURI));
             initializer.setClassForObject(SERVER, Server.class);
-        }
-        else {
+        } else {
             serverURI = coapLink + context.getServerHost() + ":" + context.getServerPort();
             initializer.setInstancesForObject(SECURITY, noSec(serverURI, context.getServerShortId()));
             initializer.setInstancesForObject(SERVER, new Server(context.getServerShortId(), context.getLifetime(), BindingMode.U, false));
@@ -149,7 +149,8 @@ public class LwM2MSecurityStore{
     }
 
     private void getKeyForRPK() {
-        if (context.getBootstrapEnable()) generateKeyRPK(context.getBootstrapRPkPublic_x(), context.getBootstrapRPkPublic_y(), null);
+        if (context.getBootstrapEnable())
+            generateKeyRPK(context.getBootstrapRPkPublic_x(), context.getBootstrapRPkPublic_y(), null);
         else generateKeyRPK(context.getServerRPkPublic_x(), context.getServerRPkPublic_y(), null);
         generateKeyRPK(context.getClientRPkPublic_x(), context.getClientRPkPublic_y(), context.getClientRPkPrivate_s());
     }
@@ -170,7 +171,8 @@ public class LwM2MSecurityStore{
                 /** Get keys */
                 /** Server, bootstrap */
                 if (privS == null || privS.isEmpty()) {
-                    if (context.getBootstrapEnable()) this.bootstrapPublicKey = KeyFactory.getInstance("EC").generatePublic(publicKeySpec);
+                    if (context.getBootstrapEnable())
+                        this.bootstrapPublicKey = KeyFactory.getInstance("EC").generatePublic(publicKeySpec);
                     else this.serverPublicKey = KeyFactory.getInstance("EC").generatePublic(publicKeySpec);
                 }  /** Client */
                 else this.clientPublicKey = KeyFactory.getInstance("EC").generatePublic(publicKeySpec);
@@ -236,6 +238,7 @@ public class LwM2MSecurityStore{
                 serverSecureURI);
 
     }
+
     private void getParamsRawPublicKey(PublicKey rawPublicKey, PrivateKey clientPrivateKey) {
         if (rawPublicKey instanceof ECPublicKey) {
             ECPublicKey ecPublicKey = (ECPublicKey) rawPublicKey;
@@ -259,6 +262,34 @@ public class LwM2MSecurityStore{
 
         } else {
             throw new IllegalStateException("Unsupported Public Key Format (only ECPublicKey supported).");
+        }
+    }
+
+    private void getParamsX509() {
+        try {
+            log.info("Client uses X509 : \n X509 Certificate (Hex): [{}] \n Private Key (Hex): [{}]",
+                    Hex.encodeHexString(getClientCertificate().getEncoded()),
+                    Hex.encodeHexString(getClientPrivateKey().getEncoded()));
+            try {
+                if (context.getBootstrapEnable()) {
+                    PrivateKey bootstrapKey = (PrivateKey) this.getKeyStoreServer().getKey(context.getBootstrapAlias(), context.getServerKeyStorePwd().toCharArray());
+
+                    log.info("BootStrap uses X509 : \n X509 Certificate (Hex): [{}] \n Private Key (Hex): [{}]",
+                            Hex.encodeHexString(getBootstrapCertificate().getEncoded()),
+                            Hex.encodeHexString(bootstrapKey.getEncoded()));
+                }
+                log.info("Server uses X509 : \n X509 Certificate (Hex): [{}]",
+                        Hex.encodeHexString(getServerCertificate().getEncoded()));
+            } catch (KeyStoreException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (UnrecoverableKeyException e) {
+                e.printStackTrace();
+            }
+
+        } catch (CertificateEncodingException e) {
+            log.error(" [{}]", e.getMessage());
         }
     }
 }

@@ -63,8 +63,9 @@ lwm2m:
       #3: NoSec mode  *
       #OMA-TS-LightweightM2M_Core-V1_1_1-20190617-A (add)
       #4: Certificate mode X509 with EST
-      dtls_mode: "${DTLIS_MODE:0}"
-      psk_identity: "${PSK_IDENTITY:client_lwm2m_psk_identity}"
+      dtls_mode: "${DTLIS_MODE:2}"
+      psk_identity: "${PSK_IDENTITY:}"
+      psk_identity_sub: "${PSK_IDENTITY_SUB:_identity}"
       # Resource MUST be used to store the PSK, defined in [RFC4279]. Since the default PSK ciphersuite
       #defined in this specification use a 128-bit AES key it is RECOMMENDED to provision a 16 byte (128 bit) key or longer
       #in the Secret Key Resource. Clients and Servers MUST support PSK keys of up to 64 bytes in length, as required by
