@@ -165,6 +165,10 @@ public class LwM2MClientContext {
     private String pskIdentity;
 
     @Getter
+    @Value("${lwm2m.client.secure.psk_identity_sub:}")
+    private String pskIdentitySub;
+
+    @Getter
     @Value("${lwm2m.client.secure.psk_key:}")
     private String pskKey;
 
