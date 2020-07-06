@@ -94,6 +94,9 @@ public class LwM2mDevice extends BaseInstanceEnabler {
                 }
             }, 500);
         }
+        if (resourceid == 5) {
+             getLwM2mClient().triggerRegistrationUpdate();
+        }
         return ExecuteResponse.success();
     }
 

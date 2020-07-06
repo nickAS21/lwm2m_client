@@ -29,7 +29,6 @@ import org.thingsboard.lwm2m.client.objects.LwM2mTemperatureSensor;
 import org.thingsboard.lwm2m.secure.LwM2MSecurityStore;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

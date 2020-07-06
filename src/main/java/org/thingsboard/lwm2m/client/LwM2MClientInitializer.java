@@ -2,8 +2,15 @@ package org.thingsboard.lwm2m.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.leshan.client.californium.LeshanClient;
+import org.eclipse.leshan.client.observer.LwM2mClientObserver;
 import org.eclipse.leshan.client.resource.LwM2mObjectEnabler;
 import org.eclipse.leshan.client.resource.listener.ObjectsListenerAdapter;
+import org.eclipse.leshan.client.servers.ServerIdentity;
+import org.eclipse.leshan.core.ResponseCode;
+import org.eclipse.leshan.core.request.BootstrapRequest;
+import org.eclipse.leshan.core.request.DeregisterRequest;
+import org.eclipse.leshan.core.request.RegisterRequest;
+import org.eclipse.leshan.core.request.UpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +39,90 @@ public class LwM2MClientInitializer {
                 log.info("Object [{}] enabled.", object.getId());
             }
         });
+        LwM2mClientObserver observer = new LwM2mClientObserver() {
+            @Override
+            public void onBootstrapStarted(ServerIdentity bsserver, BootstrapRequest request) {
+                log.info("ClientObserver -> onBootstrapStarted...");
+            }
+
+            @Override
+            public void onBootstrapSuccess(ServerIdentity bsserver, BootstrapRequest request) {
+                log.info("ClientObserver -> onBootstrapSuccess...");
+            }
+
+            @Override
+            public void onBootstrapFailure(ServerIdentity bsserver, BootstrapRequest request, ResponseCode responseCode, String errorMessage, Exception cause) {
+                log.info("ClientObserver -> onBootstrapFailure...");
+            }
+
+            @Override
+            public void onBootstrapTimeout(ServerIdentity bsserver, BootstrapRequest request) {
+                log.info("ClientObserver -> onBootstrapTimeout...");
+            }
+
+            @Override
+            public void onRegistrationStarted(ServerIdentity server, RegisterRequest request) {
+
+                log.info("ClientObserver -> onRegistrationStarted... ServerIdentity [{}]", server);
+            }
+
+            @Override
+            public void onRegistrationSuccess(ServerIdentity server, RegisterRequest request, String registrationID) {
+//                log.info("ClientObserver -> onRegistrationSuccess... ServerIdentity [{}] client.coapServer [{}]", server, client.triggerRegistrationUpdate());
+                log.info("ClientObserver -> onRegistrationSuccess... ServerIdentity [{}]", server);
+            }
+
+            @Override
+            public void onRegistrationFailure(ServerIdentity server, RegisterRequest request, ResponseCode responseCode, String errorMessage, Exception cause) {
+                log.info("ClientObserver -> onRegistrationFailure... ServerIdentity [{}]", server);
+            }
+
+            @Override
+            public void onRegistrationTimeout(ServerIdentity server, RegisterRequest request) {
+                log.info("ClientObserver -> onRegistrationTimeout... RegisterRequest [{}]", request);
+            }
+
+            @Override
+            public void onUpdateStarted(ServerIdentity server, UpdateRequest request) {
+                log.info("ClientObserver -> onUpdateStarted...  UpdateRequest [{}]", request);
+            }
+
+            @Override
+            public void onUpdateSuccess(ServerIdentity server, UpdateRequest request) {
+
+            }
+
+            @Override
+            public void onUpdateFailure(ServerIdentity server, UpdateRequest request, ResponseCode responseCode, String errorMessage, Exception cause) {
+
+            }
+
+            @Override
+            public void onUpdateTimeout(ServerIdentity server, UpdateRequest request) {
+
+            }
+
+            @Override
+            public void onDeregistrationStarted(ServerIdentity server, DeregisterRequest request) {
+
+            }
+
+            @Override
+            public void onDeregistrationSuccess(ServerIdentity server, DeregisterRequest request) {
+
+            }
+
+            @Override
+            public void onDeregistrationFailure(ServerIdentity server, DeregisterRequest request, ResponseCode responseCode, String errorMessage, Exception cause) {
+
+            }
+
+            @Override
+            public void onDeregistrationTimeout(ServerIdentity server, DeregisterRequest request) {
+
+            }
+        };
+        this.client.addObserver(observer);
         /** Start the client */
         this.client.start();
 
