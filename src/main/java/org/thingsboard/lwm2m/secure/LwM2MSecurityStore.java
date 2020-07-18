@@ -97,14 +97,17 @@ public class LwM2MSecurityStore {
             initializer.setInstancesForObject(SECURITY, rpkBootstrap(serverSecureURI, getClientPublicKey().getEncoded(),
                     getClientPrivateKey().getEncoded(), getBootstrapPublicKey().getEncoded()));
             initializer.setClassForObject(SERVER, Server.class);
+            getParamsRawPublicKey(getClientPublicKey(), getClientPrivateKey(),  getBootstrapPublicKey());
         } else {
             serverSecureURI = coapLinkSec + context.getServerSecureHost() + ":" + context.getServerSecurePort();
             initializer.setInstancesForObject(SECURITY, rpk(serverSecureURI, context.getServerShortId(), getClientPublicKey().getEncoded(),
                     getClientPrivateKey().getEncoded(), getServerPublicKey().getEncoded()));
             initializer.setInstancesForObject(SERVER, new Server(context.getServerShortId(), context.getLifetime(), BindingMode.U, false));
+            getParamsRawPublicKey(getClientPublicKey(), getClientPrivateKey(), getServerPublicKey());
         }
         /** Display client public key to easily add it in servers. */
-        getParamsRawPublicKey(getClientPublicKey(), getClientPrivateKey());
+//        getParamsRawPublicKey(getClientPublicKey(), getClientPrivateKey());
+
     }
 
     private void setInstancesX509() {
@@ -239,7 +242,7 @@ public class LwM2MSecurityStore {
 
     }
 
-    private void getParamsRawPublicKey(PublicKey rawPublicKey, PrivateKey clientPrivateKey) {
+    private void getParamsRawPublicKey(PublicKey rawPublicKey, PrivateKey clientPrivateKey, PublicKey serverPublicKey) {
         if (rawPublicKey instanceof ECPublicKey) {
             ECPublicKey ecPublicKey = (ECPublicKey) rawPublicKey;
             /** Get x coordinate */
@@ -254,11 +257,22 @@ public class LwM2MSecurityStore {
 
             /** Get Curves params */
             String params = ecPublicKey.getParams().toString();
-            log.info(
-                    " \nClient uses RPK : \n Endpoint : [{}]\n Elliptic Curve parameters  : [{}] \n Public x coord : [{}] \n Public y coord : [{}] \n Public Key (Hex): [{}] \n Private Key (Hex): [{}]",
-                    endpoint, params, Hex.encodeHexString(x), Hex.encodeHexString(y),
-                    Hex.encodeHexString(rawPublicKey.getEncoded()).toUpperCase(),
-                    Hex.encodeHexString(clientPrivateKey.getEncoded()));
+            if (context.getBootstrapEnable()) {
+                log.info(
+                        " \nClient uses RPK : \n Endpoint : [{}]\n Elliptic Curve parameters  : [{}] \n Public x coord : [{}] \n Public y coord : [{}] \n Public Key (Hex): [{}] \n Private Key (Hex): [{}]\n Public Bootstrap Server Key (Hex): [{}] ",
+                        endpoint, params, Hex.encodeHexString(x), Hex.encodeHexString(y),
+                        Hex.encodeHexString(rawPublicKey.getEncoded()).toUpperCase(),
+                        Hex.encodeHexString(clientPrivateKey.getEncoded()),
+                        Hex.encodeHexString(serverPublicKey.getEncoded()).toUpperCase());
+            }
+            else {
+                log.info(
+                        " \nClient uses RPK : \n Endpoint : [{}]\n Elliptic Curve parameters  : [{}] \n Public x coord : [{}] \n Public y coord : [{}] \n Public Key (Hex): [{}] \n Private Key (Hex): [{}]\n Public LwM2M Server Key (Hex): [{}] ",
+                        endpoint, params, Hex.encodeHexString(x), Hex.encodeHexString(y),
+                        Hex.encodeHexString(rawPublicKey.getEncoded()).toUpperCase(),
+                        Hex.encodeHexString(clientPrivateKey.getEncoded()),
+                        Hex.encodeHexString(serverPublicKey.getEncoded()).toUpperCase());
+            }
 
         } else {
             throw new IllegalStateException("Unsupported Public Key Format (only ECPublicKey supported).");
