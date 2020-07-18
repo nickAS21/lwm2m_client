@@ -17,7 +17,7 @@ lwm2m:
       key_store_pwd: "${SERVER_KEY_STORE_PWD:server_ks_password}"
       alias: "${SERVER_ALIAS:server}"
   bootstrap:
-    enable: "${BOOTSTRAP:true}"
+    enable: "${BOOTSTRAP:false}"
     bind_address: "${SERVER_ADDRESS:localhost}"
     bind_port: "${SERVER_PORT:5687}"
     short_id: "${SERVER_SHORT_ID:456}"
