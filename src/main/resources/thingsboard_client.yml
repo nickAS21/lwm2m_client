@@ -1,11 +1,13 @@
 lwm2m:
   server:
-    bind_address: "${SERVER_ADDRESS:localhost}"
+    bind_address: "${SERVER_ADDRESS:0.0.0.0}"
     bind_port: "${SERVER_PORT:5685}"
+    bind_port_cert: "${SERVER_PORT_CERT:5687}"
     short_id: "${SERVER_SHORT_ID:123}"
     secure:
-      bind_address: "${SECURE_SERVER_ADDRESS:localhost}"
+      bind_address: "${SECURE_SERVER_ADDRESS:0.0.0.0}"
       bind_port: "${SECURE_SERVER_PORT:5686}"
+      bind_port_cert: "${SECURE_SERVER_PORT_CERT:5688}"
       # Get RAW public key parameters
       rpk_public_x: "${RPK_SERVER_PUBLIC_X:405354ea8893471d9296afbc8b020a5c6201b0bb25812a53b849d4480fa5f069}"
       rpk_public_y: "${RPK_SERVER_PUBLIC_Y:30c9237e946a3a1692c1cafaa01a238a077f632c99371348337512363f28212b}"
@@ -18,22 +20,24 @@ lwm2m:
       alias: "${SERVER_ALIAS:server}"
   bootstrap:
     enable: "${BOOTSTRAP:false}"
-    bind_address: "${SERVER_ADDRESS:localhost}"
-    bind_port: "${SERVER_PORT:5687}"
-    short_id: "${SERVER_SHORT_ID:456}"
+    bind_address: "${SERVER_ADDRESS_BS:0.0.0.0}"
+    bind_port: "${SERVER_PORT_BS:5689}"
+    bind_port_cert: "${SERVER_PORT_CERT_BS:5691}"
+    short_id: "${SERVER_SHORT_ID_BS:456}"
     secure:
-      bind_address: "${SECURE_SERVER_ADDRESS:localhost}"
-      bind_port: "${SECURE_SERVER_PORT:5688}"
+      bind_address: "${SECURE_SERVER_ADDRESS_BS:0.0.0.0}"
+      bind_port: "${SECURE_SERVER_PORT_BS:5690}"
+      bind_port_cert: "${SECURE_SERVER_PORT_CERT_BS:5692}"
       # Get RAW public key parameters
-      rpk_public_x: "${RPK_BOOTSTRAP_PUBLIC_X:993ef2b698c6a9c0c1d8be78b13a9383c0854c7c7c7a504d289b403794648183}"
-      rpk_public_y: "${RPK_BOOTSTRAP_PUBLIC_Y:267412d5fc4e5ceb2257cb7fd7f76ebdac2fa9aa100afb162e990074cc0bfaa2}"
+      rpk_public_x: "${RPK_BOOTSTRAP_PUBLIC_X_BS:993ef2b698c6a9c0c1d8be78b13a9383c0854c7c7c7a504d289b403794648183}"
+      rpk_public_y: "${RPK_BOOTSTRAP_PUBLIC_Y_BS:267412d5fc4e5ceb2257cb7fd7f76ebdac2fa9aa100afb162e990074cc0bfaa2}"
       # Get keystore parameters
       alias: "${BOOTSTRAP_ALIAS:bootstrap}"
   client:
     create_psk_rpk_key: "${CREATE_PSK_RPK_KEY:true}"
     endpoint: "${ENDPOINT:client_lwm2m}"
     sub_endpoint: "${SUB_ENDPOINT:}"
-    bind_address: "${CLIENT_ADDRESS:}"
+    bind_address: "${CLIENT_ADDRESS:0.0.0.0}"
     bind_port: "${CLIENT_PORT:0}"
     model_folder_path: "${FOLDER_PATH_MODEL:}"
     support_deprecated_ciphers: "${OLD_CIPHERS:false}"

@@ -69,7 +69,7 @@ public class LwM2MClientInitializer {
             @Override
             public void onRegistrationSuccess(ServerIdentity server, RegisterRequest request, String registrationID) {
 //                log.info("ClientObserver -> onRegistrationSuccess... ServerIdentity [{}] client.coapServer [{}]", server, client.triggerRegistrationUpdate());
-                log.info("ClientObserver -> onRegistrationSuccess... ServerIdentity [{}]", server);
+                log.info("ClientObserver -> onRegistrationSuccess... ServerIdentity [{}] \n request: {} \n registrationID {}", server, request, registrationID);
             }
 
             @Override

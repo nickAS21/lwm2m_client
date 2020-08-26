@@ -17,8 +17,12 @@ public class LwM2MClientContext {
     private String serverHost;
 
     @Getter
-    @Value("${lwm2m.server.bind_port:5685}")
+    @Value("#{${lwm2m.server.bind_port:} ?: 5685}")
     private Integer serverPort;
+
+    @Getter
+    @Value("#{${lwm2m.server.bind_port_cert:} ?: 5687}")
+    private Integer serverPortCert;
 
     @Getter
     @Value("${lwm2m.server.short_id:123}")
@@ -29,8 +33,12 @@ public class LwM2MClientContext {
     private String serverSecureHost;
 
     @Getter
-    @Value("${lwm2m.server.secure.bind_port:5686}")
+    @Value("#{${lwm2m.server.secure.bind_port:} ?: 5686}")
     private Integer serverSecurePort;
+
+    @Getter
+    @Value("#{${lwm2m.server.secure.bind_port_cert:} ?: 5688}")
+    private Integer serverSecurePortCert;
 
     @Getter
     @Value("${lwm2m.server.secure.rpk_public_x:}")
@@ -69,20 +77,28 @@ public class LwM2MClientContext {
     private String bootstrapHost;
 
     @Getter
-    @Value("${lwm2m.bootstrap.bind_port:5685}")
+    @Value("#{${lwm2m.bootstrap.bind_port:} ?: 5689}")
     private Integer bootstrapPort;
+
+    @Getter
+    @Value("#{${lwm2m.bootstrap.bind_port_cert:} ?: 5691}")
+    private Integer bootstrapPortCert;
 
     @Getter
     @Value("${lwm2m.bootstrap.short_id:456}")
     private Integer bootstrapShortId;
 
     @Getter
-    @Value("${lwm2m.server.bootstrap.bind_address:localhost}")
+    @Value("${lwm2m.bootstrap.bind_address:localhost}")
     private String bootstrapSecureHost;
 
     @Getter
-    @Value("${lwm2m.bootstrap.secure.bind_port:5686}")
+    @Value("#{${lwm2m.bootstrap.secure.bind_port:} ?: 5690}")
     private Integer bootstrapSecurePort;
+
+    @Getter
+    @Value("#{${lwm2m.bootstrap.secure.bind_port_cert:} ?: 5692}")
+    private Integer bootstrapSecurePortCert;
 
     @Getter
     @Value("${lwm2m.bootstrap.secure.rpk_public_x:}")
@@ -113,7 +129,7 @@ public class LwM2MClientContext {
     private String clientHost;
 
     @Getter
-    @Value("${lwm2m.client.bind_port:0}")
+    @Value("${lwm2m.client.bind_port:}")
     private Integer clientPort;
 
     @Getter

@@ -9,6 +9,7 @@ import org.eclipse.californium.scandium.dtls.*;
 import org.eclipse.leshan.client.californium.LeshanClient;
 import org.eclipse.leshan.client.californium.LeshanClientBuilder;
 import org.eclipse.leshan.client.engine.DefaultRegistrationEngineFactory;
+import org.eclipse.leshan.client.resource.LwM2mInstanceEnabler;
 import org.eclipse.leshan.client.resource.LwM2mObjectEnabler;
 import org.eclipse.leshan.client.resource.ObjectsInitializer;
 import org.eclipse.leshan.core.californium.DefaultEndpointFactory;
@@ -79,7 +80,13 @@ public class LwM2MClientConfiguration {
         /** Initialize other objects */
         initializer.setInstancesForObject(DEVICE, new LwM2mDevice());
         initializer.setInstancesForObject(LOCATION, new LwM2mLocation(locationParams.getLatitude(), locationParams.getLongitude(), locationParams.getScaleFactor()));
-        initializer.setInstancesForObject(OBJECT_ID_TEMPERATURE_SENSOR, new LwM2mTemperatureSensor());
+        initializer.setInstancesForObject(LOCATION, new LwM2mLocation(locationParams.getLatitude(), locationParams.getLongitude(), locationParams.getScaleFactor()));
+
+        LwM2mInstanceEnabler [] instances = {new LwM2mTemperatureSensor(), new LwM2mTemperatureSensor()};
+        initializer.setInstancesForObject(OBJECT_ID_TEMPERATURE_SENSOR, instances);
+//        initializer.setInstancesForObject(OBJECT_ID_TEMPERATURE_SENSOR, new LwM2mTemperatureSensor());
+
+
         List<LwM2mObjectEnabler> enablers = initializer.createAll();
 
         /** Create CoAP Config */
@@ -130,13 +137,13 @@ public class LwM2MClientConfiguration {
                             public void sessionEstablished(Handshaker handshaker, DTLSSession establishedSession)
                                     throws HandshakeException {
                                 if (handshaker instanceof ServerHandshaker) {
-                                    log.info("DTLS Full Handshake initiated by server : SUCCEED");
+                                    log.info("DTLS Full Handshake initiated by server : SUCCEED, handshaker {}", handshaker);
                                 } else if (handshaker instanceof ResumingServerHandshaker) {
-                                    log.info("DTLS abbreviated Handshake initiated by server : SUCCEED");
+                                    log.info("DTLS abbreviated Handshake initiated by server : SUCCEED, handshaker {}", handshaker);
                                 } else if (handshaker instanceof ClientHandshaker) {
-                                    log.info("DTLS Full Handshake initiated by client : SUCCEED");
+                                    log.info("DTLS Full Handshake initiated by client : SUCCEED, handshaker {}", handshaker);
                                 } else if (handshaker instanceof ResumingClientHandshaker) {
-                                    log.info("DTLS abbreviated Handshake initiated by client : SUCCEED");
+                                    log.info("DTLS abbreviated Handshake initiated by client : SUCCEED, handshaker {}", handshaker);
                                 }
                             }
 

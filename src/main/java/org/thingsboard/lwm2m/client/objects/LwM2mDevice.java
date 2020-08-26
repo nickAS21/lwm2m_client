@@ -21,11 +21,11 @@ public class LwM2mDevice extends BaseInstanceEnabler {
 
     public LwM2mDevice() {
         // notify new date each 5 second
-        Timer timer = new Timer("Device-Current Time");
+        Timer timer = new Timer("Device-Current Time, Value betery");
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                fireResourcesChange(13);
+                fireResourcesChange(9, 13);
             }
         }, 5000, 5000);
     }
