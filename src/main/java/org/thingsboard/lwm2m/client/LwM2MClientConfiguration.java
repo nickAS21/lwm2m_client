@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.thingsboard.lwm2m.client.objects.LwM2MLocationParams;
-import org.thingsboard.lwm2m.client.objects.LwM2mDevice;
-import org.thingsboard.lwm2m.client.objects.LwM2mLocation;
-import org.thingsboard.lwm2m.client.objects.LwM2mTemperatureSensor;
+import org.thingsboard.lwm2m.client.objects.*;
 import org.thingsboard.lwm2m.secure.LwM2MSecurityStore;
 
 import java.io.File;
@@ -46,7 +43,8 @@ import static org.thingsboard.lwm2m.client.LwM2MClientHandler.modelPaths;
 @ComponentScan({"org.thingsboard.lwm2m"})
 public class LwM2MClientConfiguration {
 
-    private static final int OBJECT_ID_TEMPERATURE_SENSOR = 3303;
+    private static final int TEMPERATURE_SENSOR = 3303;
+    private static final int BINARY_APP_DATA_CONTAINER = 19;
 
     @Autowired
     private LwM2MClientContext context;
@@ -79,11 +77,13 @@ public class LwM2MClientConfiguration {
 
         /** Initialize other objects */
         initializer.setInstancesForObject(DEVICE, new LwM2mDevice());
+        initializer.setInstancesForObject(CONNECTIVITY_MONITORING, new LwM2mConnectivityMonitoring());
+        initializer.setInstancesForObject(BINARY_APP_DATA_CONTAINER, new LwM2mBinaryAppDataContainer());
         initializer.setInstancesForObject(LOCATION, new LwM2mLocation(locationParams.getLatitude(), locationParams.getLongitude(), locationParams.getScaleFactor()));
-        initializer.setInstancesForObject(LOCATION, new LwM2mLocation(locationParams.getLatitude(), locationParams.getLongitude(), locationParams.getScaleFactor()));
+//        initializer.setInstancesForObject(LOCATION, new LwM2mLocation(locationParams.getLatitude(), locationParams.getLongitude(), locationParams.getScaleFactor()));
 
         LwM2mInstanceEnabler [] instances = {new LwM2mTemperatureSensor(), new LwM2mTemperatureSensor()};
-        initializer.setInstancesForObject(OBJECT_ID_TEMPERATURE_SENSOR, instances);
+        initializer.setInstancesForObject(TEMPERATURE_SENSOR, instances);
 //        initializer.setInstancesForObject(OBJECT_ID_TEMPERATURE_SENSOR, new LwM2mTemperatureSensor());
 
 

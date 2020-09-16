@@ -7,13 +7,11 @@ import org.eclipse.leshan.client.resource.BaseInstanceEnabler;
 import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.node.LwM2mResource;
-import org.eclipse.leshan.core.response.ExecuteResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.WriteResponse;
+import org.eclipse.leshan.core.util.Hex;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @EqualsAndHashCode(callSuper = true)
@@ -48,9 +46,10 @@ public class LwM2mBinaryAppDataContainer extends BaseInstanceEnabler {
      * "cmd":"SET_TEMPERATURE_READ_PERIOD",
      * "paras":{
      * "value":4
-     *     },
+     * },
      */
-    private String data = "InNlcnZpY2VJZCI6Ik1ldGVyIiwNCiJzZXJ2aWNlRGF0YSI6ew0KImN1cnJlbnRSZWFkaW5nIjoiNDYuMyIsDQoic2lnbmFsU3RyZW5ndGgiOjE2LA0KImRhaWx5QWN0aXZpdHlUaW1lIjo1NzA2DQo=";
+//    private String data = "InNlcnZpY2VJZCI6Ik1ldGVyIiwNCiJzZXJ2aWNlRGF0YSI6ew0KImN1cnJlbnRSZWFkaW5nIjoiNDYuMyIsDQoic2lnbmFsU3RyZW5ndGgiOjE2LA0KImRhaWx5QWN0aXZpdHlUaW1lIjo1NzA2DQo=";
+    private byte[] data = {(byte) 0x0A, (byte) 0x17, (byte) 0x0A, (byte) 0xBC};
 
     private int priority = 0;
 
@@ -61,9 +60,17 @@ public class LwM2mBinaryAppDataContainer extends BaseInstanceEnabler {
     private String dataFormat = "base64";
 
     private int appID;
+    private static final Random RANDOM = new Random();
 
     public LwM2mBinaryAppDataContainer() {
-
+        Timer timer = new Timer("Device-Current Time");
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                fireResourcesChange(0);
+            }
+//        }, 5000, 5000);
+        }, 100000, 100000);
     }
 
     @Override
@@ -71,6 +78,8 @@ public class LwM2mBinaryAppDataContainer extends BaseInstanceEnabler {
         log.info("Read on Location resource /[{}]/[{}]/[{}]", getModel().id, getId(), resourceid);
         switch (resourceid) {
             case 0:
+                setData();
+                log.info("Read on Location resource /[{}]/[{}]/[{}], {}", getModel().id, getId(), resourceid, Hex.encodeHexString(this.data).toLowerCase());
                 return ReadResponse.success(resourceid, getData());
             case 1:
                 return ReadResponse.success(resourceid, getPriority());
@@ -94,7 +103,7 @@ public class LwM2mBinaryAppDataContainer extends BaseInstanceEnabler {
 
         switch (resourceid) {
             case 0:
-                setData((String) value.getValue());
+                setData((byte[]) value.getValue());
                 setTimestamp(new Date());
                 fireResourcesChange(resourceid);
                 return WriteResponse.success();
@@ -122,11 +131,26 @@ public class LwM2mBinaryAppDataContainer extends BaseInstanceEnabler {
                 return super.write(identity, resourceid, value);
         }
     }
+//
+//    private String getData() {
+//        setData();
+//        return
+//    }
 
-    @Override
-    public ExecuteResponse execute(ServerIdentity identity, int resourceid, String params) {
-        return super.execute(identity, resourceid, params);
+    private void setData() {
+        int value = RANDOM.nextInt(100000001);
+        this.data = new byte[]{
+                (byte) (value >>> 24),
+                (byte) (value >>> 16),
+                (byte) (value >>> 8),
+                (byte) value};
     }
+
+
+//    @Override
+//    public ExecuteResponse execute(ServerIdentity identity, int resourceid, String params) {
+//        return super.execute(identity, resourceid, params);
+//    }
 
     @Override
     public List<Integer> getAvailableResourceIds(ObjectModel model) {
